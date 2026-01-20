@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define EMPTY -1
+
+int main()
+{
+    int m, n, key, index, i;
+    int *hashTable;
+
+    /* Read size of hash table */
+    printf("Enter size of hash table: ");
+    scanf("%d", &m);
+
+    /* Allocate memory */
+    hashTable = (int *)malloc(m * sizeof(int));
+
+    /* Initialize hash table */
+    for (i = 0; i < m; i++)
+        hashTable[i] = EMPTY;
+
+    /* Read number of keys */
+    printf("Enter number of employee records: ");
+    scanf("%d", &n);
+
+    /* Insert keys using linear probing */
+    for (i = 0; i < n; i++)
+    {
+        printf("Enter 4-digit employee key: ");
+        scanf("%d", &key);
+
+        index = key % m;   /* Hash function */
+
+        while (hashTable[index] != EMPTY)
+            index = (index + 1) % m;
+
+        hashTable[index] = key;
+    }
+
+    /* Display hash table */
+    printf("\nHash Table Contents:\n");
+    printf("Address\tKey\n");
+
+    for (i = 0; i < m; i++)
+    {
+        if (hashTable[i] == EMPTY)
+            printf("%d\t--\n", i);
+        else
+            printf("%d\t%d\n", i, hashTable[i]);
+    }
+
+    free(hashTable);
+    return 0;
+}
