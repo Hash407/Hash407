@@ -1,0 +1,171 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct student
+{
+    char usn[20], name[30], prog[20];
+    int sem;
+    long phno;
+    struct student *next;
+};
+typedef struct student NODE;
+
+NODE *head = NULL;
+
+/* Create Node */
+NODE* create_node()
+{
+    NODE *n = (NODE*)malloc(sizeof(NODE));
+
+    printf("Enter USN: ");
+    scanf("%s", n->usn);
+
+    printf("Enter Name: ");
+    scanf("%s", n->name);
+
+    printf("Enter Program: ");
+    scanf("%s", n->prog);
+
+    printf("Enter Semester: ");
+    scanf("%d", &n->sem);
+
+    printf("Enter Phone Number: ");
+    scanf("%ld", &n->phno);
+
+    n->next = NULL;
+    return n;
+}
+
+/* Insert at Front */
+void insert_front()
+{
+    NODE *n = create_node();
+    n->next = head;
+    head = n;
+}
+
+/* Insert at End */
+void insert_end()
+{
+    NODE *n = create_node(), *t = head;
+
+    if (head == NULL)
+    {
+        head = n;
+        return;
+    }
+    while (t->next != NULL)
+        t = t->next;
+
+    t->next = n;
+}
+
+/* Delete at Front */
+void delete_front()
+{
+    NODE *t;
+    if (head == NULL)
+    {
+        printf("List is Empty\n");
+        return;
+    }
+    t = head;
+    head = head->next;
+    free(t);
+}
+
+/* Delete at End */
+void delete_end()
+{
+    NODE *t = head, *p = NULL;
+
+    if (head == NULL)
+    {
+        printf("List is Empty\n");
+        return;
+    }
+    if (head->next == NULL)
+    {
+        free(head);
+        head = NULL;
+        return;
+    }
+    while (t->next != NULL)
+    {
+        p = t;
+        t = t->next;
+    }
+    p->next = NULL;
+    free(t);
+}
+
+/* Display */
+void display()
+{
+    NODE *t = head;
+    int count = 0;
+
+    if (head == NULL)
+    {
+        printf("List is Empty\n");
+        return;
+    }
+    printf("\nStudent Details:\n");
+    while (t != NULL)
+    {
+        printf("%s %s %s %d %ld\n",
+               t->usn, t->name, t->prog, t->sem, t->phno);
+        t = t->next;
+        count++;
+    }
+    printf("Total nodes = %d\n", count);
+}
+
+/* Main */
+int main()
+{
+    int ch, n;
+
+    while (1)
+    {
+        printf("\n1.Create  2.Display  3.InsEnd  4.DelEnd  5.InsFront  6.DelFront  7.Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &ch);
+
+        switch (ch)
+        {
+        case 1:
+            printf("No of students:\n");
+            scanf("%d", &n);
+            while (n--)
+                insert_front();
+            break;
+
+        case 2:
+            display();
+            break;
+
+        case 3:
+            insert_end();
+            break;
+
+        case 4:
+            delete_end();
+            break;
+
+        case 5:
+            insert_front();
+            break;
+
+        case 6:
+            delete_front();
+            break;
+
+        case 7:
+            exit(0);
+
+        default:
+            printf("Invalid choice\n");
+        }
+    }
+}
