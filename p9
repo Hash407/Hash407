@@ -1,0 +1,104 @@
+#include <math.h>
+#include <stdio.h>
+#include<stdlib.h>
+struct Node {
+ int coeff;
+ int px, py, pz;
+ struct Node *next;
+};
+typedef struct Node* NODE;
+NODE createNode(int c, int x, int y, int z) {
+ NODE temp = (NODE)malloc(sizeof(struct Node));
+ temp ->coeff = c;
+ temp ->px = x;
+ temp ->py = y;
+ temp ->pz = z;
+ temp ->next = NULL;
+ return temp;
+}
+NODE insertEnd(NODE head, int c, int x, int y, int z) {
+ NODE temp = createNode(c, x, y, z);
+ NODE cur = head ->next;
+ while (cur ->next != head) {
+ cur = cur ->next;
+ }
+ cur->next = temp;
+ temp ->next = head;
+ return head;
+}
+void display(NODE head) {
+ if (head ->next == head) {
+ printf("0");
+ return;
+ }
+ NODE cur = head ->next;
+ while (cur != head) {
+
+ printf("%+dx^%dy^%dz^%d ", cur ->coeff, cur ->px, cur ->py, cur ->pz);
+ cur = cur ->next;
+ }
+ printf(" \n");
+}
+void evaluate(NODE head) {
+ int x, y, z;
+ double result = 0.0;
+ printf(" \nEnter values for x, y, z: ");
+ scanf("%d %d %d", &x, &y, &z);
+
+ NODE cur = head ->next;
+ while (cur != head) {
+ result += cur ->coeff * pow(x, cur ->px) * pow(y, cur ->py) * pow(z, cur ->pz);
+ cur = cur ->next;
+ }
+ printf("Polynomial Evaluation Result: %.2f \n", result);
+}
+NODE polySum(NODE p1, NODE p2, NODE pSum) {
+ NODE c1 = p1 ->next;
+ while (c1 != p1) {
+ pSum = insertEnd(pSum, c1 ->coeff, c1 ->px, c1 ->py, c1 ->pz);
+ c1 = c1 ->next;
+ }
+ NODE c2 = p2 ->next;
+ while (c2 != p2) {
+ NODE cSum = pSum ->next;
+ int found = 0;
+ while (cSum != pSum) {
+ if (cSum ->px == c2 ->px && cSum ->py == c2 ->py && cSum ->pz == c2 ->pz) {
+ cSum ->coeff += c2 ->coeff;
+ found = 1;
+ break;
+ }
+ cSum = cSum ->next;
+ }
+ if (!found) {
+ pSum = insertEnd(pSum, c2 ->coeff, c2 ->px, c2 ->py, c2 ->pz);
+ }
+ c2 = c2 ->next;
+ }
+ return pSum;
+ }
+int main() {
+ NODE head = createNode(0, -1, -1, -1);
+ head ->next = head;
+ // a) Representing P(x,y,z) = 6x^2y^2z - 4yz^5 + 3x^3yz + 2xy^5z - 2xyz^3
+ head = insertEnd(head, 6, 2, 2, 1);
+ head = insertEnd(head, -4, 0, 1, 5);
+ head = insertEnd(head, 3, 3, 1, 1);
+ head = insertEnd(head, 2, 1, 5, 1);
+ head = insertEnd(head, -2, 1, 1, 3);
+ printf("Polynomial P(x,y,z): ");
+ display(head);
+ evaluate(head);
+ // b) Polynomial Addition Demo
+ NODE poly1 = createNode(0, -1, -1, -1); poly1 ->next = poly1;
+ NODE poly2 = createNode(0, -1, -1, -1); poly2 ->next = poly2;
+ NODE sum = createNode(0, -1, -1, -1); sum ->next = sum;
+ poly1 = insertEnd(poly1, 5, 2, 2, 2);
+ poly2 = insertEnd(poly2, 3, 2, 2, 2);
+ poly2 = insertEnd(poly2, 4, 1, 1, 1);
+ printf(" \nPoly 1: "); display(poly1);
+ printf("Poly 2: "); display(poly2);
+ sum = polySum(poly1, poly2, sum);
+ printf("Poly Sum: "); display(sum);
+ return 0;
+}
