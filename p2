@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <string.h>
+
+char str[50], pat[20], rep[20], res[50];
+
+void stringmatch()
+{
+    int i = 0, j = 0, k = 0;
+    int pat_len = strlen(pat);
+
+    while (str[i] != '\0')
+    {
+        if (strncmp(&str[i], pat, pat_len) == 0)
+        {
+            // Copy replacement string
+            for (k = 0; rep[k] != '\0'; k++)
+            {
+                res[j++] = rep[k];
+            }
+            i += pat_len;  // Skip pattern length
+        }
+        else
+        {
+            res[j++] = str[i++];
+        }
+    }
+    res[j] = '\0';
+}
+
+int main()
+{
+    printf("\nEnter the main string: ");
+    fgets(str, sizeof(str), stdin);
+    str[strcspn(str, "\n")] = '\0';
+
+    printf("\nEnter the pattern string: ");
+    fgets(pat, sizeof(pat), stdin);
+    pat[strcspn(pat, "\n")] = '\0';
+
+    printf("\nEnter the replace string: ");
+    fgets(rep, sizeof(rep), stdin);
+    rep[strcspn(rep, "\n")] = '\0';
+
+    printf("\nString before replacement:\n%s\n", str);
+
+    stringmatch();
+
+    printf("\nString after pattern match and replace:\n%s\n", res);
+
+    return 0;
+}
+
