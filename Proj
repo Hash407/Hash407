@@ -1,0 +1,242 @@
+1)
+def dfs(state, goal, visited):
+    if state == goal:
+        print("Goal Found:", state)
+        return True
+
+    visited.add(state)
+
+    x, y = state
+
+    next_states = [
+        (4, y),      # Fill Jug A
+        (x, 3),      # Fill Jug B
+        (0, y),      # Empty Jug A
+        (x, 0),      # Empty Jug B
+        (max(0, x-(3-y)), min(3, y+x)),  # Pour A->B
+        (min(4, x+y), max(0, y-(4-x)))   # Pour B->A
+    ]
+
+    for new_state in next_states:
+        if new_state not in visited:
+            print("Visiting:", new_state)
+            if dfs(new_state, goal, visited):
+                return True
+
+    return False
+
+start = (0, 0)
+goal = (2, 0)
+
+dfs(start, goal, set())
+
+
+
+
+
+
+2)
+from queue import PriorityQueue
+
+def heuristic(state):
+    return state[0] + state[1]
+
+def best_first():
+    start = (3, 3, 1)
+    goal = (0, 0, 0)
+
+    pq = PriorityQueue()
+    pq.put((heuristic(start), start))
+
+    visited = set()
+
+    while not pq.empty():
+        _, state = pq.get()
+
+        if state == goal:
+            print("Goal Reached")
+            return
+
+        if state in visited:
+            continue
+
+        visited.add(state)
+
+        print("Visited:", state)
+
+        m, c, boat = state
+
+        moves = [(1,0),(2,0),(0,1),(0,2),(1,1)]
+
+        for dm, dc in moves:
+
+            if boat == 1:
+                new = (m-dm, c-dc, 0)
+            else:
+                new = (m+dm, c+dc, 1)
+
+            nm, nc, _ = new
+
+            if 0 <= nm <= 3 and 0 <= nc <= 3:
+                pq.put((heuristic(new), new))
+
+best_first()
+
+
+
+
+
+3)
+from queue import PriorityQueue
+
+graph = {
+    'A':[('B',1),('C',3)],
+    'B':[('D',3),('E',6)],
+    'C':[('F',5)],
+    'D':[('G',2)],
+    'E':[('G',1)],
+    'F':[('G',2)],
+    'G':[]
+}
+
+heuristic = {
+    'A':7,
+    'B':6,
+    'C':4,
+    'D':2,
+    'E':1,
+    'F':2,
+    'G':0
+}
+
+def astar(start, goal):
+    pq = PriorityQueue()
+    pq.put((0,start))
+
+    cost = {start:0}
+
+    while not pq.empty():
+        _, node = pq.get()
+
+        if node == goal:
+            print("Goal Found")
+            return
+
+        for neighbor,w in graph[node]:
+            new_cost = cost[node] + w
+
+            if neighbor not in cost or new_cost < cost[neighbor]:
+                cost[neighbor] = new_cost
+
+                priority = new_cost + heuristic[neighbor]
+
+                pq.put((priority,neighbor))
+
+                print(node,"->",neighbor)
+
+astar('A','G')
+
+
+
+
+
+
+4)
+graph = {
+    'A': [['B','C'], ['D']],
+    'B': [['E']],
+    'C': [['F']],
+    'D': [],
+    'E': [],
+    'F': []
+}
+
+heuristic = {
+    'A': 5,
+    'B': 2,
+    'C': 2,
+    'D': 3,
+    'E': 0,
+    'F': 0
+}
+
+def ao_star(node):
+    print("Expanding:", node)
+
+    if not graph[node]:
+        return heuristic[node]
+
+    min_cost = float('inf')
+
+    for path in graph[node]:
+
+        cost = sum(ao_star(n) for n in path)
+
+        min_cost = min(min_cost, cost)
+
+    heuristic[node] = min_cost
+
+    return min_cost
+
+print("Optimal Cost:", ao_star('A'))
+
+
+
+
+
+
+
+
+5)
+N = 8
+
+board = [[0]*N for _ in range(N)]
+
+def is_safe(board,row,col):
+
+    for i in range(col):
+        if board[row][i]:
+            return False
+
+    i,j = row,col
+
+    while i>=0 and j>=0:
+        if board[i][j]:
+            return False
+        i -= 1
+        j -= 1
+
+    i,j = row,col
+
+    while i<N and j>=0:
+        if board[i][j]:
+            return False
+        i += 1
+        j -= 1
+
+    return True
+
+def solve(board,col):
+
+    if col >= N:
+        return True
+
+    for row in range(N):
+
+        if is_safe(board,row,col):
+
+            board[row][col] = 1
+
+            if solve(board,col+1):
+                return True
+
+            board[row][col] = 0
+
+    return False
+
+if solve(board,0):
+
+    for row in board:
+        print(row)
+else:
+    print("No Solution")
